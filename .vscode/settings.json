@@ -1,0 +1,6 @@
+{
+    "python.pythonPath": "d:\\laragon\\bin\\python\\python-3.10\\python.exe",
+    "python.analysis.extraPaths": ["./"],
+    "python.linting.enabled": true,
+    "python.linting.pylanceEnabled": true
+}
