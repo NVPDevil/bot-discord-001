@@ -69,7 +69,7 @@ class NowPlayingControls(View):
         if self.cog.current_source:
             self.cog.current_source.volume = self.cog.volume
         await self.cog.embed.update_now_playing(self.cog.ctx, await self.cog.extract_info(self.cog.current_song[0]), 
-                                                self.cog.current_song[0], self.cog.current_song[1], self.cog.volume)
+                                               self.cog.current_song[0], self.cog.current_song[1], self.cog.volume)
         timestamp = int(time.time()) + 15
         embed = discord.Embed(
             title="🔊 ÂM LƯỢNG",
@@ -104,7 +104,7 @@ class NowPlayingControls(View):
         if self.cog.current_source:
             self.cog.current_source.volume = self.cog.volume
         await self.cog.embed.update_now_playing(self.cog.ctx, await self.cog.extract_info(self.cog.current_song[0]), 
-                                                self.cog.current_song[1], self.cog.current_song[1], self.cog.volume)
+                                               self.cog.current_song[0], self.cog.current_song[1], self.cog.volume)
         timestamp = int(time.time()) + 15
         embed = discord.Embed(
             title="🔊 ÂM LƯỢNG",
@@ -185,7 +185,7 @@ class NowPlayingControls(View):
         button.style = discord.ButtonStyle.green if self.cog.loop_mode else discord.ButtonStyle.grey
         await interaction.edit_original_response(view=self)
         await self.cog.embed.update_now_playing(self.cog.ctx, await self.cog.extract_info(self.cog.current_song[0]), 
-                                                self.cog.current_song[0], self.cog.current_song[1], self.cog.volume)
+                                               self.cog.current_song[0], self.cog.current_song[1], self.cog.volume)
         timestamp = int(time.time()) + 15
         embed = discord.Embed(
             title="🔁 CHẾ ĐỘ LẶP",
@@ -201,9 +201,9 @@ class NowPlayingControls(View):
 
 class EmbedManager:
     def __init__(self, cog=None, is_owner_func=None, has_special_role_func=None):
-        self.thumbnail = "https://cdn.discordapp.com/attachments/1172780124844859432/1315212716897603584/462569511_938195541553520_5772208284706843186_n.jpg?ex=686d6c0b&is=686c1a8b&hm=40aed40c3e42ad47249dbceccb39a83e774a690083a46c63a3f5a1125e73314a&"
-        self.footer_icon = "https://cdn.discordapp.com/attachments/1172780124844859432/1315212716897603584/462569511_938195541553520_5772208284706843186_n.jpg?ex=686d6c0b&is=686c1a8b&hm=40aed40c3e42ad47249dbceccb39a83e774a690083a46c63a3f5a1125e73314a&"
-        self.footer_text = "Pii BOT | Powered by Kieeu Ngaa"
+        self.thumbnail = "https://cdn.discordapp.com/attachments/934360282615132172/1390920397486161990/simple_baby_bee.png?ex=686a0310&is=6868b190&hm=301e6ff2e10d29122d3b81dcbc0bbf593190291b96c15cb13551b3536514227d&"
+        self.footer_icon = "https://cdn.discordapp.com/attachments/934360282615132172/1390920397486161990/simple_baby_bee.png?ex=686a0310&is=6868b190&hm=301e6ff2e10d29122d3b81dcbc0bbf593190291b96c15cb13551b3536514227d&"
+        self.footer_text = "Bee BOT | Powered by Kieeu Ngaa"
         self.now_playing_message = None
         self.queue_empty_message = None
         self.disconnect_task = None
@@ -242,10 +242,13 @@ class EmbedManager:
         else:
             return await self.send(ctx, embed, delete_after)
 
-    async def send_success(self, ctx, message, delete_after=None, ephemeral=False):
+    async def send_success(self, ctx, message, delete_after=15, playlist_name=None, ephemeral=False):
+        description = f"```{message[:200]}```"
+        if playlist_name:
+            description += f"\n**Playlist:** {playlist_name}"
         embed = discord.Embed(
             title="✅ THÀNH CÔNG",
-            description=f"```{message[:200]}```",
+            description=description,
             color=discord.Color.from_rgb(87, 255, 87)
         )
         embed.set_thumbnail(url=self.thumbnail)
@@ -261,7 +264,7 @@ class EmbedManager:
         else:
             return await self.send(ctx, embed, delete_after)
 
-    async def send_now_playing(self, ctx, info, url, requester_id, volume):
+    async def send_now_playing(self, ctx, info, url, requester_id, volume, playlist_name=None):
         user = ctx.guild.get_member(requester_id)
         color = discord.Color.from_rgb(255, 0, 0) if self.is_owner_func(self.cog, user) else \
                 discord.Color.from_rgb(255, 215, 0) if self.has_special_role_func(self.cog, user) else \
@@ -274,6 +277,8 @@ class EmbedManager:
             f"**Âm lượng:** {int(volume * 100)}%\n"
             f"**Lặp:** {'Bật' if self.cog.loop_mode else 'Tắt'}"
         )
+        if playlist_name:
+            embed.description += f"\n**Playlist:** {playlist_name}"
         view = NowPlayingControls(self.cog)
         return await self.send(ctx, embed, view=view)
 

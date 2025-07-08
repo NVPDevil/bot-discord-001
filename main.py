@@ -24,7 +24,7 @@ async def on_ready():
     await bot.change_presence(
         activity=discord.Activity(
             type=discord.ActivityType.listening,
-            name=f"{config.Config.PREFIX}help | Pii BOT"
+            name=f"{config.Config.PREFIX}help | Bee BOT"
         )
     )
 
