@@ -1,9 +1,9 @@
 # Pii Music Bot
 
-**Pii Music Bot** là một bot Discord được phát triển bằng Python sử dụng thư viện `discord.py`, cho phép người dùng phát nhạc từ YouTube trong voice channel. Bot có giao diện chuyên nghiệp với embed đẹp mắt, hệ thống hàng đợi (queue), và phân quyền linh hoạt cho người dùng thường, special roles, và owner.
+**Pii Music Bot** là một bot Discord được phát triển bằng Python sử dụng thư viện `discord.py`, cho phép người dùng phát nhạc từ YouTube và Spotify trong voice channel. Bot có giao diện chuyên nghiệp với embed đẹp mắt, hệ thống hàng đợi (queue), và phân quyền linh hoạt cho người dùng thường, special roles, và owner.
 
 ## Tính năng chính
-- **Phát nhạc**: Hỗ trợ phát nhạc từ URL YouTube.
+- **Phát nhạc**: Ưu tiên phát từ URL YouTube (video đơn lẻ, playlist thông thường, hoặc danh sách từ playlist radio, tối đa 25 bài). Nếu YouTube không tải được (bao gồm playlist radio), bot tìm kiếm chính xác tên bài trên Spotify và chuyển đổi sang URL YouTube. Tên playlist YouTube/Spotify được hiển thị trong embed, và playlist được thêm vào hàng đợi hiện tại mà không xóa các bài cũ.
 - **Hàng đợi (Queue)**: Quản lý danh sách nhạc với ưu tiên cho owner và special roles.
 - **Điều khiển âm lượng**: Người dùng thường (200%), special roles (300%), owner (500%).
 - **Nút điều khiển**: Skip, Stop, Volume Up/Down, Loop qua embed "Đang phát".
@@ -52,11 +52,14 @@ class Config:
     TOKEN = "YOUR_BOT_TOKEN"  # Token bot từ Discord Developer Portal
     OWNER_ID = YOUR_OWNER_ID  # ID Discord của bạn
     SPECIAL_ROLE_IDS = [ROLE_ID_1, ROLE_ID_2]  # Danh sách ID role đặc biệt
-    ALLOWED_CHANNEL_ID = YOUR_CHANNEL_ID  # ID kênh cố định cho bot hoạt động
+    ALLOWED_CHANNEL_ID = YOUR_CHANNEL_ID  # ID kênh cố định
+    SPOTIPY_CLIENT_ID = "YOUR_SPOTIFY_CLIENT_ID"  # Client ID từ Spotify
+    SPOTIFY_CLIENT_SECRET = "YOUR_SPOTIFY_CLIENT_SECRET"  # Client Secret từ Spotify
 ```
 - **Token**: Tạo bot tại [Discord Developer Portal](https://discord.com/developers/applications), lấy token từ tab "Bot".
 - **Owner ID**: Nhấp chuột phải vào tên bạn trên Discord -> "Copy ID" (bật Developer Mode trong Discord).
 - **Channel ID**: Nhấp chuột phải vào kênh -> "Copy ID".
+- **Spotify Credentials**: Tạo ứng dụng tại [Spotify Developer Dashboard](https://developer.spotify.com/dashboard), lấy `Client ID` và `Client Secret`.
 
 ### 5. Chạy bot
 ```bash
@@ -67,7 +70,7 @@ Bot sẽ đăng nhập và hiển thị trạng thái: "Listening to !help | Pii
 ## Danh sách lệnh
 
 ### Người dùng thường
-- `!play <URL>`: Phát nhạc từ URL YouTube.
+- `!play <URL>`: Phát nhạc từ URL YouTube (video đơn lẻ, playlist thông thường, hoặc danh sách từ playlist radio) hoặc Spotify nếu YouTube không tải được (tối đa 25 bài). Tên playlist được hiển thị trong embed, và playlist được thêm vào hàng đợi hiện tại.
 - `!queue`: Xem danh sách nhạc đang chờ (tự xóa sau 60s).
 - `!volume <0-200>`: Điều chỉnh âm lượng (tối đa 200%).
 - `!skip`: Bỏ qua bài hát (chỉ bài do bạn yêu cầu).
@@ -96,7 +99,7 @@ Bot sẽ đăng nhập và hiển thị trạng thái: "Listening to !help | Pii
   - Bitrate: ~128-256 kbps (AAC).
   - Sample rate: 44.1-48 kHz.
   - Nguồn: YouTube (giới hạn bởi định dạng "bestaudio").
-- **Giới hạn**: Chất lượng bị ảnh hưởng bởi nguồn YouTube và bitrate voice channel Discord (128 kbps cho server free, 384 kbps cho server boost cao cấp).
+- **Giới hạn**: Chất lượng bị ảnh hưởng bởi nguồn YouTube và bitrate voice channel Discord (128 kbps cho server free, 384 kbps cho server boost cao cấp). Playlist radio YouTube được trích xuất tối đa 25 bài, nếu không thành công sẽ tìm kiếm từ Spotify với logic cải thiện (ưu tiên video chính thức, khớp thời lượng).
 
 ## Cấu trúc thư mục
 ```
